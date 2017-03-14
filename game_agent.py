@@ -62,6 +62,153 @@ def custom_score(game, player):
     opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
     return float(own_moves - opp_moves) + bonus
 
+def boxed_improved_score(game, player):
+    """
+    Calculate the heuristic value of a game state from the point of view of
+    the given player.
+    determines self and opponent differnce of
+    number of legal moves / valid moves; edges have fewer valid moves
+
+
+    Args:
+    ----------
+    game : `isolation.Board`
+        An instance of `isolation.Board` encoding the current state of the
+        game (e.g., player locations and blocked cells).
+
+    player : hashable
+        One of the objects registered by the game object as a valid player.
+        (i.e., `player` should be either game.__player_1__ or
+        game.__player_2__).
+
+    Returns:
+    ----------
+    float
+        The heuristic value of the current game state.
+    """
+
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    own_ratio = float(len(game.get_legal_moves(player)))/float(len(valid_moves(game, player)))
+    opp_ratio = float(len(game.get_legal_moves(player)))/float(len(valid_moves(game, game.get_opponent(player))))
+    return own_ratio - opp_ratio
+
+
+def boxed_ratio_score(game, player):
+    """
+    Calculate the heuristic value of a game state from the point of view of
+    the given player.
+
+    Args:
+    ----------
+    game : `isolation.Board`
+        An instance of `isolation.Board` encoding the current state of the
+        game (e.g., player locations and blocked cells).
+
+    player : hashable
+        One of the objects registered by the game object as a valid player.
+        (i.e., `player` should be either game.__player_1__ or
+        game.__player_2__).
+
+    Returns:
+    ----------
+    float
+        The heuristic value of the current game state.
+    """
+
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    return float(len(game.get_legal_moves(player)))/float(len(valid_moves(game, player)))
+
+
+def runaway_score(game, player):
+    """
+    Calculate the heuristic value of a game state from the point of view of
+    the given player.
+    Determines Manhattan distance from player to oppornent
+
+    Args:
+    ----------
+    game : `isolation.Board`
+        An instance of `isolation.Board` encoding the current state of the
+        game (e.g., player locations and blocked cells).
+
+    player : hashable
+        One of the objects registered by the game object as a valid player.
+        (i.e., `player` should be either game.__player_1__ or
+        game.__player_2__).
+
+    Returns:
+    ----------
+    float
+        The heuristic value of the current game state.
+    """
+
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    own_location = game.get_player_location(player)
+    opp_location = game.get_player_location(game.get_opponent(player))
+    distance = abs(own_location[0]-opp_location[0]) + abs(own_location[1]-opp_location[1])
+    return float(distance)
+
+
+def centerbias_score(game, player):
+    """
+    Calculate the heuristic value of a game state from the point of view of
+    the given player.
+    Determines Manhattan distance from player to oppornent
+
+    Args:
+    ----------
+    game : `isolation.Board`
+        An instance of `isolation.Board` encoding the current state of the
+        game (e.g., player locations and blocked cells).
+
+    player : hashable
+        One of the objects registered by the game object as a valid player.
+        (i.e., `player` should be either game.__player_1__ or
+        game.__player_2__).
+
+    Returns:
+    ----------
+    float
+        The heuristic value of the current game state.
+    """
+
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    bonus = 0.
+
+    center = (int(game.width/2), int(game.height/2))
+    r, c = center
+    directions = [(-1, -2), (-1, 2), (1, -2), (1, 2),
+                  (2, -1), (2, 1), (-2, -1), (-2, 1)]
+
+    off_center = [(r + dr, c + dc) for dr, dc in directions if in_bounds(game, r + dr, c + dc)]
+    player_location = game.get_player_location(player)
+    if player_location == center:
+        bonus = 1.5
+    elif player_location in off_center:
+            bonus = 0.5
+    own_moves = len(game.get_legal_moves(player))
+    opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
+    return float(own_moves - opp_moves) + bonus
 
 class CustomPlayer:
     """Game-playing agent that chooses a move using your evaluation function
