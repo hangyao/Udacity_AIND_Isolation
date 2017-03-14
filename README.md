@@ -1,6 +1,10 @@
 
 # Build a Game-playing Agent
 
+## Udacity Artificial Intelligence Nanodegree Project 2
+
+---
+
 ## Synopsis
 
 In this project, students will develop an adversarial search agent to play the game "Isolation".  Students only need to modify code in the `game_agent.py`, however, code is included for example player and evaluation functions for you to review and test against in the other files.
@@ -11,7 +15,7 @@ This project uses a version of Isolation where each agent is restricted to L-sha
 
 Additionally, agents will have a fixed time limit each turn to search for the best move and respond.  If the time limit expires during a player's turn, that player forfeits the match, and the opponent wins.
 
-These rules are implemented in the `isolation.Board` class provided in the repository. 
+These rules are implemented in the `isolation.Board` class provided in the repository.
 
 
 ## Quickstart Guide
@@ -100,6 +104,32 @@ The tournament opponents are listed below. (See also: sample heuristics and play
 - AB_Improved: CustomPlayer agent using fixed-depth alpha-beta search and the improved_score heuristic
 
 
-## Submitting
+## Heuristics Analysis
 
-Your project is ready for submission when it meets all requirements of the project rubric.  Your code is finished when it passes all unit tests, and you have successfully implemented a suitable heuristic function.
+  1. Game-tree searching
+    I successfully implemented minimax, alphabeta, and iterative deepening. All tests pass.
+
+  2. Agent success
+    The final agent and `custom_score()` function produced varying results, presumably because it is very sensitive to the time constraint on my computer. The agent generally beats all test agents and outperforms `ID_Improved`.
+
+  3. Evaluation function performance
+    Four evaluation functions were implemented in addition to the `null_score()`, `open_move_score()`, and `improved_score()` functions provided. They are described here:
+
+    `boxed_ratio_score()` – calculates the ratio of legal_moves to valid_moves, where a “valid” move is one that is on the board but may or may not already be used. The purpose of this heuristic is to score the board position at any given time based on how “boxed in” the player is. For example, there may be fewer moves toward an edge, but if they are all available that might indicate that the area is relatively unexplored and might be a good location. The value lies between 0 and 1 to represent the percentage of open spots given the normal possible moves if the board was empty.
+
+    `boxed_improved_score()` – although this turned out to be a misnomer (it was not really an improvement), this is the difference between the player’s boxed_ratio and the opponent’s boxed_ratio, indicating the relative strengths of their “boxed” positions.
+
+    `runaway_score()` – this was meant as a purely defensive strategy. The value returned is the Manhattan distance between the player and opponent agents.
+
+    `centerbias_score()` – Experimentation showed that the `improved_score()` test heuristic was hard to beat. In an attempt to give that very good heuristic an edge, `centerbias_score` uses the `Improved` value and adds a bonus for center and off-center positions. These positions should already be favored by the `Improved`, but all things being equal, the center is still the most dominant position on the board. This heuristic boosts that so that the center and one off of center will be favored positions in the event of a tie.
+
+    The `centerbias_score` heuristic was included in `custom_score` for the final submitted agent. The three reasons for the final agent recommendation are:
+
+    1. First and foremost both the `improved_score` and `centerbias_score` functions beat all other evaluation functions in head to head competitions.
+
+    2. In addition to the actual quantitative evidence supporting the choice of `improved_score` or `centerbias_score`, qualitatively we can think of what kind of information this evaluation function provides compared to the others. Null or Random do not evaluate the state of the board at all. Open only evaluates the state of the player. Since this is a two-player game, we really need to know the state of the board relative to the opponent’s state. `Improved` does this by returning the difference between the player’s open moves and the opponent’s open moves, and therefore incorporates more information in its score. `boxed_ratio_score` also provided a relative score, but it is more derivative in nature takes longer to compute so not as good a choice.
+
+    3. In choosing between `improved_score` and `centerbias_score`, the data provided by the `tournament.py` program does not favor either. On one hand, we could argue that the simpler should be used (`Improved`). However, the tournament did not give the agents a choice of first move, whether either the first or second player. If the agents were given that choice, then their first move would favor the center spot over the near center spot when using c`enterbias_score`, whereas `Improved` would see the center spot as “just as good” as the off center spots in a 7x7 game. Biasing towards the center position has the effect of providing an “opening book” via the evaluation function. This was a recommended strategy in the lectures, so it is favored here, even though the tournament did not highlight this feature.
+
+## References
+- Russell, S., & Norvig, P. (2010). Artificial Intelligence: a modern approach.
