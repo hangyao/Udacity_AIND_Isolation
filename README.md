@@ -107,21 +107,24 @@ The tournament opponents are listed below. (See also: sample heuristics and play
 ## Heuristics Analysis
 
   1. Game-tree searching
+
     I successfully implemented minimax, alphabeta, and iterative deepening. All tests pass.
 
   2. Agent success
+
     The final agent and `custom_score()` function produced varying results, presumably because it is very sensitive to the time constraint on my computer. The agent generally beats all test agents and outperforms `ID_Improved`.
 
   3. Evaluation function performance
+
     Four evaluation functions were implemented in addition to the `null_score()`, `open_move_score()`, and `improved_score()` functions provided. They are described here:
 
-    `boxed_ratio_score()` – calculates the ratio of legal_moves to valid_moves, where a “valid” move is one that is on the board but may or may not already be used. The purpose of this heuristic is to score the board position at any given time based on how “boxed in” the player is. For example, there may be fewer moves toward an edge, but if they are all available that might indicate that the area is relatively unexplored and might be a good location. The value lies between 0 and 1 to represent the percentage of open spots given the normal possible moves if the board was empty.
+    - `boxed_ratio_score()` – calculates the ratio of legal_moves to valid_moves, where a “valid” move is one that is on the board but may or may not already be used. The purpose of this heuristic is to score the board position at any given time based on how “boxed in” the player is. For example, there may be fewer moves toward an edge, but if they are all available that might indicate that the area is relatively unexplored and might be a good location. The value lies between 0 and 1 to represent the percentage of open spots given the normal possible moves if the board was empty.
 
-    `boxed_improved_score()` – although this turned out to be a misnomer (it was not really an improvement), this is the difference between the player’s boxed_ratio and the opponent’s boxed_ratio, indicating the relative strengths of their “boxed” positions.
+    - `boxed_improved_score()` – although this turned out to be a misnomer (it was not really an improvement), this is the difference between the player’s boxed_ratio and the opponent’s boxed_ratio, indicating the relative strengths of their “boxed” positions.
 
-    `runaway_score()` – this was meant as a purely defensive strategy. The value returned is the Manhattan distance between the player and opponent agents.
+    - `runaway_score()` – this was meant as a purely defensive strategy. The value returned is the Manhattan distance between the player and opponent agents.
 
-    `centerbias_score()` – Experimentation showed that the `improved_score()` test heuristic was hard to beat. In an attempt to give that very good heuristic an edge, `centerbias_score` uses the `Improved` value and adds a bonus for center and off-center positions. These positions should already be favored by the `Improved`, but all things being equal, the center is still the most dominant position on the board. This heuristic boosts that so that the center and one off of center will be favored positions in the event of a tie.
+    - `centerbias_score()` – Experimentation showed that the `improved_score()` test heuristic was hard to beat. In an attempt to give that very good heuristic an edge, `centerbias_score` uses the `Improved` value and adds a bonus for center and off-center positions. These positions should already be favored by the `Improved`, but all things being equal, the center is still the most dominant position on the board. This heuristic boosts that so that the center and one off of center will be favored positions in the event of a tie.
 
     The `centerbias_score` heuristic was included in `custom_score` for the final submitted agent. The three reasons for the final agent recommendation are:
 
